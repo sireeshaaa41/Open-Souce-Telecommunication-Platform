@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BarChart3,
   Bell,
@@ -6,18 +8,28 @@ import {
   Search,
   Settings,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
 
+const menuItems = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
+  { href: "/alerts", label: "Alerts", icon: Bell, tooltip: "Alerts" },
+  { href: "/reports", label: "Reports", icon: BarChart3, tooltip: "Reports" },
+  { href: "/analysis", label: "Analysis", icon: Search, tooltip: "Analysis" },
+];
+
 export function SidebarNav() {
+  const pathname = usePathname();
+  
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="h-16 justify-center p-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2 md:justify-start md:p-4">
@@ -28,30 +40,20 @@ export function SidebarNav() {
       </SidebarHeader>
       <SidebarContent className="flex-1 p-2">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Dashboard" isActive>
-              <LayoutDashboard />
-              <span>Dashboard</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Alerts">
-              <Bell />
-              <span>Alerts</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Reports">
-              <BarChart3 />
-              <span>Reports</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Analysis">
-              <Search />
-              <span>Analysis</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {menuItems.map(({ href, label, icon: Icon, tooltip }) => (
+            <SidebarMenuItem key={href}>
+              <Link href={href} passHref legacyBehavior>
+                <SidebarMenuButton
+                  as="a"
+                  tooltip={tooltip}
+                  isActive={pathname === href}
+                >
+                  <Icon />
+                  <span>{label}</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          ))}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-2">
