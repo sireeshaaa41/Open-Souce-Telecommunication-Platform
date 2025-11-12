@@ -41,6 +41,24 @@ const formSchema = z.object({
     .min(50, "Please provide at least 50 characters for analysis."),
 });
 
+const exampleFindings = `Incident Report: High Packet Loss on Core-SW-1
+
+Time: 2024-08-15 14:30 UTC - 16:00 UTC
+
+Affected Service: All traffic passing through Core-SW-1
+
+Observations:
+- Monitoring systems triggered a "High Packet Loss" alert for interface Gi1/0/1 on Core-SW-1 at 14:32 UTC. Packet loss peaked at 15%.
+- User reports from the engineering department indicated slow application performance and intermittent connection drops.
+- Log analysis of Core-SW-1 shows a spike in output queue drops on interface Gi1/0/1.
+- Log entry: "%QOS-4-QUEUE_FULL: Output queue for policy-map PM_VOIP is full on GigabitEthernet1/0/1".
+- A review of recent network changes shows a new video streaming service was deployed at 14:00 UTC, which significantly increased traffic from the media server farm connected to this switch.
+
+Initial Analysis:
+The sudden increase in video traffic likely saturated the uplink interface Gi1/0/1, causing the QoS policy to drop non-essential traffic. The existing QoS configuration does not appear to be adequate for the new traffic patterns.
+`;
+
+
 export function RootCauseAnalysis() {
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState("");
@@ -50,7 +68,7 @@ export function RootCauseAnalysis() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      findings: "",
+      findings: exampleFindings,
     },
   });
 
@@ -77,7 +95,7 @@ export function RootCauseAnalysis() {
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (!isOpen) {
-      form.reset();
+      form.reset({ findings: exampleFindings });
       setSummary("");
       setIsLoading(false);
     }
